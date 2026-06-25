@@ -20,6 +20,9 @@ export function injectPathToSchemas(jsonSchema: JSONSchema, prefix?: string): vo
   traverse(
     jsonSchema,
     (schema, _isCycle, path) => {
+      if (typeof schema === 'boolean') {
+        return schema
+      }
       if (!('$ref' in schema) && !(SchemaPathSymbol in schema)) {
         schema[SchemaPathSymbol] = `${prefix}${jsonPathToPointer(path)}`
       }

@@ -56,6 +56,21 @@ describe('validate', function () {
       )
     })
 
+    it('should validate invalid data when schema contains boolean subschemas', done => {
+      cli(
+        `validate --errors=json-oneline --merge-errors=false -s ${fdir}/schema_with_boolean_additional.json ${fdir}/data_for_boolean_additional.json`,
+        (error, stdout, stderr) => {
+          assert(error instanceof Error)
+          assert.match(stderr, /\bdata_for_boolean_additional\.json invalid/)
+          const err = JSON.parse(stdout.trim())[0]
+          assert.equal(err.keyword, 'type')
+          assert.equal(err.instancePath, '/name')
+          assert.equal(err.schemaPath, '#/properties/name/type')
+          done()
+        },
+      )
+    })
+
     it('should fail with message if missing --schema option', done => {
       cli(`validate ${fdir}/valid_data.json`, (error, stdout, stderr) => {
         assert(error instanceof Error)
